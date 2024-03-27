@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Mood_Tracker</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">Wpis</string>
+    <string name="title_dashboard">Statystyki</string>
+    <string name="title_notifications">Leki</string>
+    <string name="title_profil">Profil</string>
+
     <string name="jak_si_teraz_czujesz">Jak się teraz czujesz?</string>
     <string name="zapisz">Zapisz</string>
     <string name="todo">TODO</string>
@@ -12,4 +14,5 @@
     <string name="todo4">TODO</string>
     <string name="jak_si_czujesz">Jak się czujesz?</string>
     <string name="pytanie">pytanie</string>
+
 </resources>

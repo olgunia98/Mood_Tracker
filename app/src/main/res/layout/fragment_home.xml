@@ -25,14 +25,14 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
-        android:layout_height="500dp"
+        android:layout_height="560dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.021">
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/textView3"
@@ -87,7 +87,28 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/todo4"
                 android:src="@drawable/happy" />
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/xml_text_date"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Date" />
+
+        <EditText
+            android:id="@+id/editTextText"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:ems="10"
+            android:inputType="text"
+            android:text="Miejce na własne notatki :)" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
 
     </LinearLayout>
 
@@ -101,6 +122,6 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.163" />
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
