@@ -15,6 +15,7 @@ import com.example.mood_tracker.databinding.ActivityMainBinding
 import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import java.util.zip.DataFormatException
 
 class MainActivity : AppCompatActivity() {
@@ -42,9 +43,10 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         // data
         val calendar = Calendar.getInstance().time
-        val dateFormat = DateFormat.getDateInstance(DateFormat.FULL).format(calendar)
+        val dateFormat = DateFormat.getDateInstance(DateFormat.FULL, Locale("pl")).format(calendar)
         val dateTextView = findViewById<TextView>(R.id.xml_text_date)
         dateTextView.text = dateFormat
+
 
         // buzki
         val imageView = findViewById<ImageView>(R.id.angry)
@@ -53,9 +55,6 @@ class MainActivity : AppCompatActivity() {
             // Toast.makeText(this@MainActivity, "Kliknięto na ImageView", Toast.LENGTH_SHORT).show()
             imageView.setBackgroundColor(Color.BLUE)
         }
-
-
-
 
 
 

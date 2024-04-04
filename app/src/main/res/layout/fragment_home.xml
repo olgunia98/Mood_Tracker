@@ -38,9 +38,8 @@
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
             android:text="Jak się teraz czujesz?"
+            android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
         <LinearLayout
@@ -94,7 +93,18 @@
             android:id="@+id/xml_text_date"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Date" />
+            android:text="Date"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Co się dzisiaj wydarzyło?"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="34sp" />
 
         <EditText
             android:id="@+id/editTextText"
@@ -103,12 +113,6 @@
             android:ems="10"
             android:inputType="text"
             android:text="Miejce na własne notatki :)" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
 
     </LinearLayout>
 
