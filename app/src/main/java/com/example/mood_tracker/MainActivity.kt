@@ -49,12 +49,23 @@ class MainActivity : AppCompatActivity() {
 
 
         // buzki
-        val imageView = findViewById<ImageView>(R.id.angry)
+        val imageIds = arrayOf(R.id.angry, R.id.sad, R.id.neutral, R.id.smile, R.id.happy)
 
-        imageView.setOnClickListener {
-            // Toast.makeText(this@MainActivity, "Kliknięto na ImageView", Toast.LENGTH_SHORT).show()
-            imageView.setBackgroundColor(Color.BLUE)
+        for (imageId in imageIds) {
+            val imageView = findViewById<ImageView>(imageId)
+            imageView.setOnClickListener {
+                // Resetowanie kolorów wszystkich obrazków
+                for (id in imageIds) {
+                    findViewById<ImageView>(id).setBackgroundColor(Color.TRANSPARENT)
+                }
+                // Ustawienie nowego koloru dla klikniętego obrazka
+                imageView.setBackgroundColor(Color.BLUE)
+            }
         }
+
+
+
+
 
 
 
