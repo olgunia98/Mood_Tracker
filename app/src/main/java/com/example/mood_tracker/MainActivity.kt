@@ -41,34 +41,5 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        // data
-        val calendar = Calendar.getInstance().time
-        val dateFormat = DateFormat.getDateInstance(DateFormat.FULL, Locale("pl")).format(calendar)
-        val dateTextView = findViewById<TextView>(R.id.xml_text_date)
-        dateTextView.text = dateFormat
-
-
-        // buzki
-        val imageIds = arrayOf(R.id.angry, R.id.sad, R.id.neutral, R.id.smile, R.id.happy)
-
-        for (imageId in imageIds) {
-            val imageView = findViewById<ImageView>(imageId)
-            imageView.setOnClickListener {
-                // Resetowanie kolorów wszystkich obrazków
-                for (id in imageIds) {
-                    findViewById<ImageView>(id).setBackgroundColor(Color.TRANSPARENT)
-                }
-                // Ustawienie nowego koloru dla klikniętego obrazka
-                imageView.setBackgroundColor(Color.BLUE)
-            }
-        }
-
-
-
-
-
-
-
     }
-
 }
