@@ -35,7 +35,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="Jak się teraz czujesz?"
@@ -107,25 +107,19 @@
             android:textSize="34sp" />
 
         <EditText
-            android:id="@+id/editTextText"
+            android:id="@+id/editTextNote"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:ems="10"
             android:inputType="text"
             android:text="Miejce na własne notatki :)" />
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/button_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/zapisz" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/zapisz"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.0" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

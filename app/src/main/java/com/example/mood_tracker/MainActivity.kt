@@ -17,6 +17,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.zip.DataFormatException
+import android.widget.Button
+import android.widget.EditText
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,5 +43,69 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        val editTextNote: EditText = findViewById(R.id.editTextNote);
+        val imageViewAngry: ImageView = findViewById(R.id.angry)
+        val imageViewSad: ImageView = findViewById(R.id.sad)
+        val imageViewNeutral: ImageView = findViewById(R.id.neutral)
+        val imageViewSmile: ImageView = findViewById(R.id.smile)
+        val imageViewHappy: ImageView = findViewById(R.id.happy)
+        val buttonSubmit: Button = findViewById(R.id.button_submit)
+
+        var text: String = "aaa"
+
+        imageViewAngry.setOnClickListener {
+            imageViewAngry.alpha = 1.0F
+            imageViewSad.alpha = 0.5F
+            imageViewNeutral.alpha = 0.5F
+            imageViewSmile.alpha = 0.5F
+            imageViewHappy.alpha = 0.5F
+            text = "angry"
+        }
+
+        imageViewSad.setOnClickListener {
+            imageViewAngry.alpha = 0.5F
+            imageViewSad.alpha = 1.0F
+            imageViewNeutral.alpha = 0.5F
+            imageViewSmile.alpha = 0.5F
+            imageViewHappy.alpha = 0.5F
+            text = "sad"
+        }
+
+        imageViewNeutral.setOnClickListener {
+            imageViewAngry.alpha = 0.5F
+            imageViewSad.alpha = 0.5F
+            imageViewNeutral.alpha = 1F
+            imageViewSmile.alpha = 0.5F
+            imageViewHappy.alpha = 0.5F
+            text = "neutral"
+        }
+
+        imageViewSmile.setOnClickListener {
+            imageViewAngry.alpha = 0.5F
+            imageViewSad.alpha = 0.5F
+            imageViewNeutral.alpha = 0.5F
+            imageViewSmile.alpha = 1.0F
+            imageViewHappy.alpha = 0.5F
+            text = "smile"
+        }
+
+        imageViewHappy.setOnClickListener {
+            imageViewAngry.alpha = 0.5F
+            imageViewSad.alpha = 0.5F
+            imageViewNeutral.alpha = 0.5F
+            imageViewSmile.alpha = 0.5F
+            imageViewHappy.alpha = 1.0F
+            text = "happy"
+        }
+
+        buttonSubmit.setOnClickListener {
+            // Co się stanie po kliknięciu przycisku
+//            if(!imageViewAngry.isSelected) {
+//                text = "angry"
+//            }
+            //text = editTextNote.text.toString()
+            Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+        }
     }
 }
