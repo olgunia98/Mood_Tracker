@@ -31,7 +31,6 @@ class HomeFragment() : Fragment(), Parcelable {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private var text = "nie wybrano emocji"
 
     constructor(parcel: Parcel) : this() {
 
@@ -71,6 +70,7 @@ class HomeFragment() : Fragment(), Parcelable {
 //                imageView.setBackgroundColor(Color.BLUE)
 //            }
 //        }
+        var text = ""
         val editTextNote: EditText = root.findViewById(R.id.editTextNote)
         val imageViewAngry: ImageView = root.findViewById(R.id.angry)
         val imageViewSad: ImageView = root.findViewById(R.id.sad)
@@ -78,8 +78,6 @@ class HomeFragment() : Fragment(), Parcelable {
         val imageViewSmile: ImageView = root.findViewById(R.id.smile)
         val imageViewHappy: ImageView = root.findViewById(R.id.happy)
         val buttonSubmit: Button = root.findViewById(R.id.button_submit)
-
-        //var text: String = "Nie wybrano emocji"
 
         imageViewAngry.setOnClickListener {
             imageViewAngry.alpha = 1.0F
@@ -132,11 +130,12 @@ class HomeFragment() : Fragment(), Parcelable {
 //                text = "angry"
 //            }
             //text = editTextNote.text.toString()
-            appendToFile(root.context, "history.txt", text)
-            Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
-            val dataFromFile = readFromFile(root.context, "history.txt")
-
-            println(dataFromFile)
+            if (text in setOf("angry", "sad", "neutral", "smile", "happy")){
+                appendToFile(root.context, "history.txt", text)
+            }
+            else {
+                Toast.makeText(this.context, "Nie wybrano emocji.", Toast.LENGTH_SHORT).show()
+            }
         }
 
 
@@ -153,7 +152,7 @@ class HomeFragment() : Fragment(), Parcelable {
         }
     }
 
-    fun saveToFile(context: Context, fileName: String, data: String) {
+    private fun saveToFile(context: Context, fileName: String, data: String) {
         try {
             val fos: FileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
             fos.write(data.toByteArray())
