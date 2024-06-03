@@ -64,7 +64,7 @@
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/editTextText2"
+            android:id="@+id/editTextDrugName"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#7FD6CE"
@@ -198,13 +198,24 @@
                 android:backgroundTint="#004A43"
                 android:text="Dodaj godziny przyjmowania" />
 
-            <LinearLayout
-                android:id="@+id/selectedTimesLayout"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:orientation="vertical">
 
-            </LinearLayout>
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+
+                <LinearLayout
+                    android:id="@+id/selectedTimesLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                </LinearLayout>
+            </ScrollView>
+<!--            <LinearLayout-->
+<!--                android:id="@+id/selectedTimesLayout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:orientation="vertical">-->
+<!--            </LinearLayout>-->
 
         </LinearLayout>
 
