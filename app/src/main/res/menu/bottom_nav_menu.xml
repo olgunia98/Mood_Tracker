@@ -16,9 +16,9 @@
         android:icon="@drawable/baseline_medical_information_24"
         android:title="@string/title_notifications" />
     <item
-        android:id="@+id/leki"
+        android:id="@+id/navigation_profile"
         android:icon="@drawable/baseline_account_box_24"
-        android:title="@string/title_profil" />
+        android:title="@string/title_profile" />
 
 
 
