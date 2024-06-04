@@ -10,12 +10,10 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.mood_tracker.R
 import com.example.mood_tracker.databinding.FragmentProfileBinding
 
-class ProfileFragment : Fragment() {
-
+class ProfileFragment : Fragment(){
     private var _binding: FragmentProfileBinding? = null
 
     // This property is only valid between onCreateView and
@@ -58,9 +56,6 @@ class ProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val profileViewModel =
-            ViewModelProvider(this)[ProfileViewModel::class.java]
-
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
