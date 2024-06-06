@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.profile.ProfileFragment">
 
+    <!--  Pytania i odpowiedzi  -->
     <TextView
         android:id="@+id/question_text_view_0"
         android:layout_width="0dp"
@@ -76,6 +77,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/answers_radio_group" />
 
+<!--  Wyniki  -->
     <TextView
         android:id="@+id/end_text_view"
         android:layout_width="0dp"
@@ -112,13 +114,25 @@
         android:layout_height="200dp"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/result_text_view"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/repeat_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         android:text="Wynik poniżej 5 punktów oznacza brak depresji, od 5 do 9 punktów oznacza łagodną depresję, od 10 do 14 punktów oznacza umiarkowaną depresję, od 15 do 19 punktów oznacza umiarkowanie ciężką depresję, a powyżej 20 punktów oznacza ciężką depresję."
         android:layout_margin="16dp" />
 
+    <Button
+        android:id="@+id/repeat_button"
+        android:layout_width="300dp"
+        android:layout_height="75dp"
+        android:layout_margin="16dp"
+        android:text="Powrót"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/description_text_view" />
+
+<!--  Ekran początkowy  -->
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="0dp"

@@ -31,6 +31,7 @@ class ProfileFragment : Fragment(){
     private lateinit var endTextView: TextView
     private lateinit var resultTextView: TextView
     private lateinit var descriptionTextView: TextView
+    private lateinit var repeatButton: Button
 
 
     private val questions = arrayOf(
@@ -70,6 +71,7 @@ class ProfileFragment : Fragment(){
         endTextView = root.findViewById(R.id.end_text_view)
         resultTextView = root.findViewById(R.id.result_text_view)
         descriptionTextView = root.findViewById(R.id.description_text_view)
+        repeatButton = root.findViewById(R.id.repeat_button)
 
         question0TextView.visibility = View.GONE
         questionTextView.visibility = View.GONE
@@ -78,6 +80,7 @@ class ProfileFragment : Fragment(){
         endTextView.visibility = View.GONE
         resultTextView.visibility = View.GONE
         descriptionTextView.visibility = View.GONE
+        repeatButton.visibility = View.GONE
 
         startButton.setOnClickListener {
             loadQuestion()
@@ -88,6 +91,20 @@ class ProfileFragment : Fragment(){
             questionTextView.visibility = View.VISIBLE
             answersRadioGroup.visibility = View.VISIBLE
             submitButton.visibility = View.VISIBLE
+        }
+
+        repeatButton.setOnClickListener {
+            points = 0
+            currentQuestion = 0
+
+            endTextView.visibility = View.GONE
+            resultTextView.visibility = View.GONE
+            descriptionTextView.visibility = View.GONE
+            repeatButton.visibility = View.GONE
+
+            titleTextView.visibility = View.VISIBLE
+            instructionTextView.visibility = View.VISIBLE
+            startButton.visibility = View.VISIBLE
         }
 
         submitButton.setOnClickListener {
@@ -146,6 +163,7 @@ class ProfileFragment : Fragment(){
         resultTextView.visibility = View.VISIBLE
         resultTextView.text = diagnosis
         descriptionTextView.visibility = View.VISIBLE
+        repeatButton.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {

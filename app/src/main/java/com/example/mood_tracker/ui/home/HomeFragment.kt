@@ -1,28 +1,34 @@
 package com.example.mood_tracker.ui.home
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TableLayout
+import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mood_tracker.R
 import com.example.mood_tracker.databinding.FragmentHomeBinding
-import java.text.DateFormat
-import java.util.Calendar
-import java.util.Locale
-import android.content.Context
 import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.InputStreamReader
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+
 
 class HomeFragment() : Fragment(), Parcelable {
 
@@ -36,6 +42,10 @@ class HomeFragment() : Fragment(), Parcelable {
 
     }
 
+    private lateinit var tableContentLeft: TableLayout
+    private lateinit var tableContentMiddle: TableLayout
+    private lateinit var tableContentRight: TableLayout
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,15 +57,19 @@ class HomeFragment() : Fragment(), Parcelable {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        tableContentLeft = root.findViewById(R.id.table_content_left)
+        tableContentMiddle = root.findViewById(R.id.table_content_middle)
+        tableContentRight = root.findViewById(R.id.table_content_right)
+
         val textView: TextView = binding.textHome
         homeViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
 
         // Set date text
-        val calendar = Calendar.getInstance().time
-        val dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT, Locale("pl")).format(calendar)
-        binding.xmlTextDate.text = dateFormat
+//        val calendar = Calendar.getInstance().time
+//        val dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT, Locale("pl")).format(calendar)
+//        binding.xmlTextDate.text = dateFormat
 
         // Setup image click listeners
 //        val imageIds = arrayOf(R.id.angry, R.id.sad, R.id.neutral, R.id.smile, R.id.happy)
@@ -70,8 +84,8 @@ class HomeFragment() : Fragment(), Parcelable {
 //                imageView.setBackgroundColor(Color.BLUE)
 //            }
 //        }
-        var text = ""
-        val editTextNote: EditText = root.findViewById(R.id.editTextNote)
+        var mood = ""
+//        val editTextNote: EditText = root.findViewById(R.id.editTextNote)
         val imageViewAngry: ImageView = root.findViewById(R.id.angry)
         val imageViewSad: ImageView = root.findViewById(R.id.sad)
         val imageViewNeutral: ImageView = root.findViewById(R.id.neutral)
@@ -85,7 +99,7 @@ class HomeFragment() : Fragment(), Parcelable {
             imageViewNeutral.alpha = 0.5F
             imageViewSmile.alpha = 0.5F
             imageViewHappy.alpha = 0.5F
-            text = "angry"
+            mood = "fatalny"
         }
 
         imageViewSad.setOnClickListener {
@@ -94,7 +108,7 @@ class HomeFragment() : Fragment(), Parcelable {
             imageViewNeutral.alpha = 0.5F
             imageViewSmile.alpha = 0.5F
             imageViewHappy.alpha = 0.5F
-            text = "sad"
+            mood = "zły"
         }
 
         imageViewNeutral.setOnClickListener {
@@ -103,7 +117,7 @@ class HomeFragment() : Fragment(), Parcelable {
             imageViewNeutral.alpha = 1F
             imageViewSmile.alpha = 0.5F
             imageViewHappy.alpha = 0.5F
-            text = "neutral"
+            mood = "neutralny"
         }
 
         imageViewSmile.setOnClickListener {
@@ -112,7 +126,7 @@ class HomeFragment() : Fragment(), Parcelable {
             imageViewNeutral.alpha = 0.5F
             imageViewSmile.alpha = 1.0F
             imageViewHappy.alpha = 0.5F
-            text = "smile"
+            mood = "dobry"
         }
 
         imageViewHappy.setOnClickListener {
@@ -121,7 +135,7 @@ class HomeFragment() : Fragment(), Parcelable {
             imageViewNeutral.alpha = 0.5F
             imageViewSmile.alpha = 0.5F
             imageViewHappy.alpha = 1.0F
-            text = "happy"
+            mood = "doskonały"
         }
 
         buttonSubmit.setOnClickListener {
@@ -130,14 +144,23 @@ class HomeFragment() : Fragment(), Parcelable {
 //                text = "angry"
 //            }
             //text = editTextNote.text.toString()
-            if (text in setOf("angry", "sad", "neutral", "smile", "happy")){
+            if (mood in setOf("fatalny", "zły", "neutralny", "dobry", "doskonały")){
+                val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                val currentDate = dateFormat.format(Date())
+
+                val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                val currentTime = timeFormat.format(Date())
+
+                val text = "$mood $currentDate $currentTime"
                 appendToFile(root.context, "history.txt", text)
+                updateHistoryLayout(root.context)
+                Toast.makeText(this.context, "Dodano do rejestru.", Toast.LENGTH_SHORT).show()
             }
             else {
                 Toast.makeText(this.context, "Nie wybrano emocji.", Toast.LENGTH_SHORT).show()
             }
         }
-
+        updateHistoryLayout(root.context)
 
         return root
     }
@@ -180,6 +203,116 @@ class HomeFragment() : Fragment(), Parcelable {
             e.printStackTrace()
         }
         return stringBuilder.toString()
+    }
+
+    private fun updateHistoryLayout(context: Context) {
+        //val layoutInflater = LayoutInflater.from(requireContext())
+//        val historyLayout: LinearLayout = binding.historyLayout
+//        historyLayout.removeAllViews()
+//
+//        val dataFromFile = readFromFile(context, "history.txt")
+//        val historyList = dataFromFile.split('\n')
+//
+//        for (historyRecord in historyList) {
+//            //val itemView = layoutInflater.inflate(R.layout.item_selected_time, historyLayout, false)
+//            //val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
+//            val timeTextView: TextView = TextView(historyLayout.context)
+//
+//            timeTextView.text = historyRecord
+//            historyLayout.addView(timeTextView)
+//
+//            //historyLayout.addView(itemView)
+//        }
+
+        tableContentLeft.removeAllViews()
+        tableContentMiddle.removeAllViews()
+        tableContentRight.removeAllViews()
+
+        val dataFromFile = readFromFile(context, "history.txt")
+        val historyList = dataFromFile.split('\n')
+
+        val rowsLeft = mutableListOf<TableRow>()
+        val rowsMiddle = mutableListOf<TableRow>()
+        val rowsRight = mutableListOf<TableRow>()
+
+        for (historyRecord in historyList) {
+            val historyRecordList = historyRecord.split(' ')
+            if (historyRecordList.size == 3) {
+                val mood = historyRecordList[0]
+                val date = historyRecordList[1]
+                val time = historyRecordList[2]
+
+                val layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT)
+                layoutParams.weight = 1f
+
+                // Tworzenie nowego wiersza dla lewej kolumny
+                val tableRowLeft = TableRow(context)
+                val textViewLeft = TextView(context)
+                textViewLeft.text = mood
+                textViewLeft.setPadding(8, 8, 8, 8)
+                textViewLeft.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                textViewLeft.layoutParams = layoutParams
+                tableRowLeft.addView(textViewLeft)
+
+                val tableRowMiddle = TableRow(context)
+                val textViewMiddle = TextView(context)
+                textViewMiddle.text = date
+                textViewMiddle.setPadding(8, 8, 8, 8)
+                textViewMiddle.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                textViewMiddle.layoutParams = layoutParams
+                tableRowMiddle.addView(textViewMiddle)
+
+                // Tworzenie nowego wiersza dla prawej kolumny
+                val tableRowRight = TableRow(context)
+                val textViewRight = TextView(context)
+                textViewRight.text = time
+                textViewRight.setPadding(8, 8, 8, 8)
+                textViewRight.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                textViewRight.layoutParams = layoutParams
+                tableRowRight.addView(textViewRight)
+
+                when (mood) {
+                    "fatalny" -> {
+                        tableRowLeft.setBackgroundColor(Color.rgb(233,57,57))
+                        tableRowMiddle.setBackgroundColor(Color.rgb(233,57,57))
+                        tableRowRight.setBackgroundColor(Color.rgb(233,57,57))
+                    }
+                    "zły" -> {
+                        tableRowLeft.setBackgroundColor(Color.rgb(239,113,3))
+                        tableRowMiddle.setBackgroundColor(Color.rgb(239,113,3))
+                        tableRowRight.setBackgroundColor(Color.rgb(239,113,3))
+                    }
+                    "neutralny" -> {
+                        tableRowLeft.setBackgroundColor(Color.rgb(255,189,5))
+                        tableRowMiddle.setBackgroundColor(Color.rgb(255,189,5))
+                        tableRowRight.setBackgroundColor(Color.rgb(255,189,5))
+                    }
+                    "dobry" -> {
+                        tableRowLeft.setBackgroundColor(Color.rgb(208,221,56))
+                        tableRowMiddle.setBackgroundColor(Color.rgb(208,221,56))
+                        tableRowRight.setBackgroundColor(Color.rgb(208,221,56))
+                    }
+                    "doskonały" -> {
+                        tableRowLeft.setBackgroundColor(Color.rgb(134,192,72))
+                        tableRowMiddle.setBackgroundColor(Color.rgb(134,192,72))
+                        tableRowRight.setBackgroundColor(Color.rgb(134,192,72))
+                    }
+                }
+
+                rowsLeft.add(tableRowLeft)
+                rowsMiddle.add(tableRowMiddle)
+                rowsRight.add(tableRowRight)
+            }
+            else {
+                continue
+            }
+        }
+
+        for (i in rowsLeft.size - 1 downTo 0) {
+            tableContentLeft.addView(rowsLeft[i])
+            tableContentMiddle.addView(rowsMiddle[i])
+            tableContentRight.addView(rowsRight[i])
+        }
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

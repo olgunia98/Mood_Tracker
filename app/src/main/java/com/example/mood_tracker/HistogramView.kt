@@ -12,6 +12,11 @@ import com.example.mood_tracker.databinding.FragmentHomeBinding
 import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.InputStreamReader
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 //    private var _binding: FragmentHomeBinding? = null
@@ -31,14 +36,19 @@ class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs
         val dataFromFile = readFromFile(this.context, "history.txt")
         val lines = dataFromFile.split('\n')
         for (line in lines) {
-            when (line) {
-                "angry" -> data[0] += 1f
-                "sad" -> data[1] += 1f
-                "neutral" -> data[2] += 1f
-                "smile" -> data[3] += 1f
-                "happy" -> data[4] += 1f
+            val historyRecordList = line.split(' ')
+            if (historyRecordList.size == 3) {
+                val mood = historyRecordList[0]
+                when (mood) {
+                    "fatalny" -> data[0] += 1f
+                    "zły" -> data[1] += 1f
+                    "neutralny" -> data[2] += 1f
+                    "dobry" -> data[3] += 1f
+                    "doskonały" -> data[4] += 1f
+                }
             }
         }
+
         //Toast.makeText(this.context, dataFromFile, Toast.LENGTH_SHORT).show()
 
         val width = width
@@ -74,13 +84,20 @@ class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs
 
         // dolny wykres
         val data2 = floatArrayOf(0f, 0f, 0f, 0f, 0f)
-        for (line in lines.takeLast(7)) {
-            when (line) {
-                "angry" -> data2[0] += 1f
-                "sad" -> data2[1] += 1f
-                "neutral" -> data2[2] += 1f
-                "smile" -> data2[3] += 1f
-                "happy" -> data2[4] += 1f
+        for (line in lines) {
+            val historyRecordList = line.split(' ')
+            if (historyRecordList.size == 3) {
+                val mood = historyRecordList[0]
+                val date = historyRecordList[1]
+                if (isDateInLastWeek(date)){
+                    when (mood) {
+                        "fatalny" -> data2[0] += 1f
+                        "zły" -> data2[1] += 1f
+                        "neutralny" -> data2[2] += 1f
+                        "dobry" -> data2[3] += 1f
+                        "doskonały" -> data2[4] += 1f
+                    }
+                }
             }
         }
 
@@ -108,8 +125,28 @@ class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs
             val labelY = 700 - 5f // Pozycja etykiety pod belką
             canvas.drawText(labels[i], labelX, labelY.toFloat() + shift, paint)
         }
+    }
 
+    fun isDateInLastWeek(dateStr: String): Boolean {
+        // Format daty
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
+        return try {
+            val givenDate: Date = dateFormat.parse(dateStr) ?: return false
+
+            // Bieżąca data
+            val currentDate = Calendar.getInstance()
+
+            // Data sprzed tygodnia
+            val lastWeekDate = Calendar.getInstance()
+            lastWeekDate.add(Calendar.DAY_OF_YEAR, -7)
+
+            // Sprawdź, czy dana data mieści się w przedziale ostatniego tygodnia
+            givenDate.after(lastWeekDate.time) && givenDate.before(currentDate.time)
+        } catch (e: ParseException) {
+            // Zwróć false, jeśli nie uda się sparsować daty
+            false
+        }
     }
 
     fun readFromFile(context: Context, fileName: String): String {
