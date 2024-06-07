@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,16 +21,11 @@ import com.example.mood_tracker.R
 import com.example.mood_tracker.databinding.FragmentHomeBinding
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.IOException
-import java.io.InputStreamReader
 import java.nio.charset.Charset
-import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -72,26 +66,7 @@ class HomeFragment() : Fragment(), Parcelable {
             textView.text = it
         }
 
-        // Set date text
-//        val calendar = Calendar.getInstance().time
-//        val dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT, Locale("pl")).format(calendar)
-//        binding.xmlTextDate.text = dateFormat
-
-        // Setup image click listeners
-//        val imageIds = arrayOf(R.id.angry, R.id.sad, R.id.neutral, R.id.smile, R.id.happy)
-//        for (imageId in imageIds) {
-//            val imageView = root.findViewById<ImageView>(imageId)
-//            imageView.setOnClickListener {
-//                // Reset colors of all images
-//                for (id in imageIds) {
-//                    root.findViewById<ImageView>(id).setBackgroundColor(Color.TRANSPARENT)
-//                }
-//                // Set new color for clicked image
-//                imageView.setBackgroundColor(Color.BLUE)
-//            }
-//        }
         var mood = ""
-//        val editTextNote: EditText = root.findViewById(R.id.editTextNote)
         val imageViewAngry: ImageView = root.findViewById(R.id.angry)
         val imageViewSad: ImageView = root.findViewById(R.id.sad)
         val imageViewNeutral: ImageView = root.findViewById(R.id.neutral)
@@ -146,11 +121,6 @@ class HomeFragment() : Fragment(), Parcelable {
         }
 
         buttonSubmit.setOnClickListener {
-            // Co się stanie po kliknięciu przycisku
-//            if(!imageViewAngry.isSelected) {
-//                text = "angry"
-//            }
-            //text = editTextNote.text.toString()
             if (mood in setOf("fatalny", "zły", "neutralny", "dobry", "doskonały")){
                 val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
                 val currentDate = dateFormat.format(Date())
@@ -159,9 +129,6 @@ class HomeFragment() : Fragment(), Parcelable {
                 val currentTime = timeFormat.format(Date())
                 val note = editTextInput.text
                 editTextInput.setText("")
-                // val text = "$mood $currentDate $currentTime"
-//                val text = "$mood $currentDate $note"
-//                appendToFile(root.context, "history.txt", text)
 
                 val jsonObject = JSONObject()
                 jsonObject.put("mood", mood)
@@ -224,71 +191,10 @@ class HomeFragment() : Fragment(), Parcelable {
         return historyList
     }
 
-    fun appendToFile(context: Context, fileName: String, data: String) {
-        try {
-            val fos: FileOutputStream = context.openFileOutput(fileName, Context.MODE_APPEND)
-            fos.write((data + "\n").toByteArray())
-            fos.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun saveToFile(context: Context, fileName: String, data: String) {
-        try {
-            val fos: FileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
-            fos.write(data.toByteArray())
-            fos.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    fun readFromFile(context: Context, fileName: String): String {
-        val stringBuilder = StringBuilder()
-        try {
-            val fis = context.openFileInput(fileName)
-            val isr = InputStreamReader(fis)
-            val bufferedReader = BufferedReader(isr)
-            var line = bufferedReader.readLine()
-            while (line != null) {
-                stringBuilder.append(line).append("\n")
-                line = bufferedReader.readLine()
-            }
-            bufferedReader.close()
-            isr.close()
-            fis.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return stringBuilder.toString()
-    }
-
     private fun updateHistoryLayout(context: Context) {
-        //val layoutInflater = LayoutInflater.from(requireContext())
-//        val historyLayout: LinearLayout = binding.historyLayout
-//        historyLayout.removeAllViews()
-//
-//        val dataFromFile = readFromFile(context, "history.txt")
-//        val historyList = dataFromFile.split('\n')
-//
-//        for (historyRecord in historyList) {
-//            //val itemView = layoutInflater.inflate(R.layout.item_selected_time, historyLayout, false)
-//            //val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
-//            val timeTextView: TextView = TextView(historyLayout.context)
-//
-//            timeTextView.text = historyRecord
-//            historyLayout.addView(timeTextView)
-//
-//            //historyLayout.addView(itemView)
-//        }
-
         tableContentLeft.removeAllViews()
         tableContentMiddle.removeAllViews()
         tableContentRight.removeAllViews()
-
-//        val dataFromFile = readFromFile(context, "history.txt")
-//        val historyList = dataFromFile.split('\n')
 
         val rowsLeft = mutableListOf<TableRow>()
         val rowsMiddle = mutableListOf<TableRow>()
@@ -300,19 +206,13 @@ class HomeFragment() : Fragment(), Parcelable {
             val mood = historyRecord.getString("mood")
             val date = historyRecord.getString("date")
             val note = historyRecord.getString("note")
-            //val historyRecordList = historyRecord.split(' ')
-//            if (historyRecordList.size == 3) {
-//                val mood = historyRecordList[0]
-//                val date = historyRecordList[1]
-//                val time = historyRecordList[2]
 
             val layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT)
             layoutParams.weight = 1f
 
-            // Tworzenie nowego wiersza dla lewej kolumny
             val tableRowLeft = TableRow(context)
             val textViewLeft = TextView(context)
-            textViewLeft.text = mood
+            textViewLeft.text = date
             textViewLeft.setPadding(8, 8, 8, 8)
             textViewLeft.textAlignment = View.TEXT_ALIGNMENT_CENTER
             textViewLeft.layoutParams = layoutParams
@@ -320,13 +220,12 @@ class HomeFragment() : Fragment(), Parcelable {
 
             val tableRowMiddle = TableRow(context)
             val textViewMiddle = TextView(context)
-            textViewMiddle.text = date
+            textViewMiddle.text = mood
             textViewMiddle.setPadding(8, 8, 8, 8)
             textViewMiddle.textAlignment = View.TEXT_ALIGNMENT_CENTER
             textViewMiddle.layoutParams = layoutParams
             tableRowMiddle.addView(textViewMiddle)
 
-            // Tworzenie nowego wiersza dla prawej kolumny
             val tableRowRight = TableRow(context)
             val textViewRight = TextView(context)
             textViewRight.text = note
@@ -346,41 +245,9 @@ class HomeFragment() : Fragment(), Parcelable {
                 tableRowRight.setBackgroundColor(Color.WHITE)
             }
             index++
-//            when (mood) {
-//                "fatalny" -> {
-//                    tableRowLeft.setBackgroundColor(Color.rgb(233,57,57))
-//                    tableRowMiddle.setBackgroundColor(Color.rgb(233,57,57))
-//                    tableRowRight.setBackgroundColor(Color.rgb(233,57,57))
-//                }
-//                "zły" -> {
-//                    tableRowLeft.setBackgroundColor(Color.rgb(239,113,3))
-//                    tableRowMiddle.setBackgroundColor(Color.rgb(239,113,3))
-//                    tableRowRight.setBackgroundColor(Color.rgb(239,113,3))
-//                }
-//                "neutralny" -> {
-//                    tableRowLeft.setBackgroundColor(Color.rgb(255,189,5))
-//                    tableRowMiddle.setBackgroundColor(Color.rgb(255,189,5))
-//                    tableRowRight.setBackgroundColor(Color.rgb(255,189,5))
-//                }
-//                "dobry" -> {
-//                    tableRowLeft.setBackgroundColor(Color.rgb(208,221,56))
-//                    tableRowMiddle.setBackgroundColor(Color.rgb(208,221,56))
-//                    tableRowRight.setBackgroundColor(Color.rgb(208,221,56))
-//                }
-//                "doskonały" -> {
-//                    tableRowLeft.setBackgroundColor(Color.rgb(134,192,72))
-//                    tableRowMiddle.setBackgroundColor(Color.rgb(134,192,72))
-//                    tableRowRight.setBackgroundColor(Color.rgb(134,192,72))
-//                }
-//            }
-
             rowsLeft.add(tableRowLeft)
             rowsMiddle.add(tableRowMiddle)
             rowsRight.add(tableRowRight)
-//            }
-//            else {
-//                continue
-//            }
         }
 
         for (i in rowsLeft.size - 1 downTo 0) {

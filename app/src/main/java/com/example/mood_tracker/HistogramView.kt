@@ -34,8 +34,6 @@ class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-
-
         val data = floatArrayOf(0f, 0f, 0f, 0f, 0f)
         val data2 = floatArrayOf(0f, 0f, 0f, 0f, 0f)
         val historyList = readFromJsonFile(context.filesDir, "history.json")
