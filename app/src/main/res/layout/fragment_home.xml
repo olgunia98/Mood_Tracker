@@ -90,11 +90,39 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            tools:context=".MainActivity">
+
+            <TextView
+                android:id="@+id/textViewLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Notatka:"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/editTextInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Wpisz tutaj..."
+                android:inputType="text"
+                android:maxLength="15"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/button_submit"
             android:layout_width="match_parent"
-            android:layout_height="75dp"
+            android:layout_height="50dp"
             android:layout_margin="16dp"
+            android:backgroundTint="#1976D2"
             app:layout_constraintEnd_toEndOf="parent"
             android:text="@string/zapisz" />
 
@@ -131,6 +159,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="8dp"
+                    android:background="#1976D2"
+                    android:textColor="#FFFFFF"
                     android:text="Nastrój"
                     android:textAlignment="center"
                     android:textStyle="bold" />
@@ -140,6 +170,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="8dp"
+                    android:background="#1976D2"
+                    android:textColor="#FFFFFF"
                     android:text="Data"
                     android:textAlignment="center"
                     android:textStyle="bold" />
@@ -149,7 +181,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="Godzina"
+                    android:background="#1976D2"
+                    android:textColor="#FFFFFF"
+                    android:text="Notatka"
                     android:textAlignment="center"
                     android:textStyle="bold" />
             </TableRow>

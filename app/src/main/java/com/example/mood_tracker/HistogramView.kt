@@ -9,9 +9,13 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.Toast
 import com.example.mood_tracker.databinding.FragmentHomeBinding
+import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStreamReader
+import java.nio.charset.Charset
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -33,18 +37,25 @@ class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs
 
 
         val data = floatArrayOf(0f, 0f, 0f, 0f, 0f)
-        val dataFromFile = readFromFile(this.context, "history.txt")
-        val lines = dataFromFile.split('\n')
-        for (line in lines) {
-            val historyRecordList = line.split(' ')
-            if (historyRecordList.size == 3) {
-                val mood = historyRecordList[0]
+        val data2 = floatArrayOf(0f, 0f, 0f, 0f, 0f)
+        val historyList = readFromJsonFile(context.filesDir, "history.json")
+        for (historyRecord in historyList) {
+            val mood = historyRecord.getString("mood")
+            val date = historyRecord.getString("date")
+            when (mood) {
+                "fatalny" -> data[0] += 1f
+                "zły" -> data[1] += 1f
+                "neutralny" -> data[2] += 1f
+                "dobry" -> data[3] += 1f
+                "doskonały" -> data[4] += 1f
+            }
+            if (isDateInLastWeek(date)){
                 when (mood) {
-                    "fatalny" -> data[0] += 1f
-                    "zły" -> data[1] += 1f
-                    "neutralny" -> data[2] += 1f
-                    "dobry" -> data[3] += 1f
-                    "doskonały" -> data[4] += 1f
+                    "fatalny" -> data2[0] += 1f
+                    "zły" -> data2[1] += 1f
+                    "neutralny" -> data2[2] += 1f
+                    "dobry" -> data2[3] += 1f
+                    "doskonały" -> data2[4] += 1f
                 }
             }
         }
@@ -83,24 +94,6 @@ class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs
         }
 
         // dolny wykres
-        val data2 = floatArrayOf(0f, 0f, 0f, 0f, 0f)
-        for (line in lines) {
-            val historyRecordList = line.split(' ')
-            if (historyRecordList.size == 3) {
-                val mood = historyRecordList[0]
-                val date = historyRecordList[1]
-                if (isDateInLastWeek(date)){
-                    when (mood) {
-                        "fatalny" -> data2[0] += 1f
-                        "zły" -> data2[1] += 1f
-                        "neutralny" -> data2[2] += 1f
-                        "dobry" -> data2[3] += 1f
-                        "doskonały" -> data2[4] += 1f
-                    }
-                }
-            }
-        }
-
         val shift = 800f
         //canvas.drawLine(0f, 0f, width * 1f, 0f, paint)
         canvas.drawLine(0f, shift - 50f, width * 1f, shift - 50f, paint)
@@ -147,6 +140,25 @@ class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs
             // Zwróć false, jeśli nie uda się sparsować daty
             false
         }
+    }
+
+    private fun readFromJsonFile(directory: File, fileName: String): List<JSONObject> {
+        val file = File(directory, fileName)
+        val historyList = mutableListOf<JSONObject>()
+        if (file.exists()) {
+            try {
+                val content = file.readText(Charset.defaultCharset())
+                if (content.isNotEmpty()) {
+                    val jsonArray = JSONObject(content).getJSONArray("history")
+                    for (i in 0 until jsonArray.length()) {
+                        historyList.add(jsonArray.getJSONObject(i))
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return historyList
     }
 
     fun readFromFile(context: Context, fileName: String): String {

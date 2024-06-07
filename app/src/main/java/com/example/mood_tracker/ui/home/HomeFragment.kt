@@ -20,9 +20,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mood_tracker.R
 import com.example.mood_tracker.databinding.FragmentHomeBinding
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileOutputStream
+import java.io.FileWriter
+import java.io.IOException
 import java.io.InputStreamReader
+import java.nio.charset.Charset
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -91,6 +97,7 @@ class HomeFragment() : Fragment(), Parcelable {
         val imageViewNeutral: ImageView = root.findViewById(R.id.neutral)
         val imageViewSmile: ImageView = root.findViewById(R.id.smile)
         val imageViewHappy: ImageView = root.findViewById(R.id.happy)
+        val editTextInput: EditText = root.findViewById(R.id.editTextInput)
         val buttonSubmit: Button = root.findViewById(R.id.button_submit)
 
         imageViewAngry.setOnClickListener {
@@ -150,19 +157,71 @@ class HomeFragment() : Fragment(), Parcelable {
 
                 val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
                 val currentTime = timeFormat.format(Date())
+                val note = editTextInput.text
+                editTextInput.setText("")
+                // val text = "$mood $currentDate $currentTime"
+//                val text = "$mood $currentDate $note"
+//                appendToFile(root.context, "history.txt", text)
 
-                val text = "$mood $currentDate $currentTime"
-                appendToFile(root.context, "history.txt", text)
+                val jsonObject = JSONObject()
+                jsonObject.put("mood", mood)
+                jsonObject.put("date", currentDate)
+                jsonObject.put("note", note)
+                appendToJsonFile(root.context.filesDir, "history.json", jsonObject)
+
                 updateHistoryLayout(root.context)
-                Toast.makeText(this.context, "Dodano do rejestru.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(root.context, "Dodano do rejestru.", Toast.LENGTH_SHORT).show()
             }
             else {
-                Toast.makeText(this.context, "Nie wybrano emocji.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(root.context, "Nie wybrano emocji.", Toast.LENGTH_SHORT).show()
             }
         }
         updateHistoryLayout(root.context)
 
         return root
+    }
+
+    private fun appendToJsonFile(directory: File, fileName: String, jsonObject: JSONObject) {
+        val file = File(directory, fileName)
+        try {
+            val jsonArray = if (file.exists()) {
+                val content = file.readText()
+                if (content.isNotEmpty()) {
+                    JSONObject(content).getJSONArray("history")
+                } else {
+                    JSONArray()
+                }
+            } else {
+                JSONArray()
+            }
+            jsonArray.put(jsonObject)
+            val jsonToWrite = JSONObject().put("history", jsonArray)
+
+            FileWriter(file).use { writer ->
+                writer.write(jsonToWrite.toString())
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun readFromJsonFile(directory: File, fileName: String): List<JSONObject> {
+        val file = File(directory, fileName)
+        val historyList = mutableListOf<JSONObject>()
+        if (file.exists()) {
+            try {
+                val content = file.readText(Charset.defaultCharset())
+                if (content.isNotEmpty()) {
+                    val jsonArray = JSONObject(content).getJSONArray("history")
+                    for (i in 0 until jsonArray.length()) {
+                        historyList.add(jsonArray.getJSONObject(i))
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return historyList
     }
 
     fun appendToFile(context: Context, fileName: String, data: String) {
@@ -228,84 +287,100 @@ class HomeFragment() : Fragment(), Parcelable {
         tableContentMiddle.removeAllViews()
         tableContentRight.removeAllViews()
 
-        val dataFromFile = readFromFile(context, "history.txt")
-        val historyList = dataFromFile.split('\n')
+//        val dataFromFile = readFromFile(context, "history.txt")
+//        val historyList = dataFromFile.split('\n')
 
         val rowsLeft = mutableListOf<TableRow>()
         val rowsMiddle = mutableListOf<TableRow>()
         val rowsRight = mutableListOf<TableRow>()
 
+        val historyList = readFromJsonFile(context.filesDir, "history.json")
+        var index = 0
         for (historyRecord in historyList) {
-            val historyRecordList = historyRecord.split(' ')
-            if (historyRecordList.size == 3) {
-                val mood = historyRecordList[0]
-                val date = historyRecordList[1]
-                val time = historyRecordList[2]
+            val mood = historyRecord.getString("mood")
+            val date = historyRecord.getString("date")
+            val note = historyRecord.getString("note")
+            //val historyRecordList = historyRecord.split(' ')
+//            if (historyRecordList.size == 3) {
+//                val mood = historyRecordList[0]
+//                val date = historyRecordList[1]
+//                val time = historyRecordList[2]
 
-                val layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT)
-                layoutParams.weight = 1f
+            val layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT)
+            layoutParams.weight = 1f
 
-                // Tworzenie nowego wiersza dla lewej kolumny
-                val tableRowLeft = TableRow(context)
-                val textViewLeft = TextView(context)
-                textViewLeft.text = mood
-                textViewLeft.setPadding(8, 8, 8, 8)
-                textViewLeft.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                textViewLeft.layoutParams = layoutParams
-                tableRowLeft.addView(textViewLeft)
+            // Tworzenie nowego wiersza dla lewej kolumny
+            val tableRowLeft = TableRow(context)
+            val textViewLeft = TextView(context)
+            textViewLeft.text = mood
+            textViewLeft.setPadding(8, 8, 8, 8)
+            textViewLeft.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            textViewLeft.layoutParams = layoutParams
+            tableRowLeft.addView(textViewLeft)
 
-                val tableRowMiddle = TableRow(context)
-                val textViewMiddle = TextView(context)
-                textViewMiddle.text = date
-                textViewMiddle.setPadding(8, 8, 8, 8)
-                textViewMiddle.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                textViewMiddle.layoutParams = layoutParams
-                tableRowMiddle.addView(textViewMiddle)
+            val tableRowMiddle = TableRow(context)
+            val textViewMiddle = TextView(context)
+            textViewMiddle.text = date
+            textViewMiddle.setPadding(8, 8, 8, 8)
+            textViewMiddle.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            textViewMiddle.layoutParams = layoutParams
+            tableRowMiddle.addView(textViewMiddle)
 
-                // Tworzenie nowego wiersza dla prawej kolumny
-                val tableRowRight = TableRow(context)
-                val textViewRight = TextView(context)
-                textViewRight.text = time
-                textViewRight.setPadding(8, 8, 8, 8)
-                textViewRight.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                textViewRight.layoutParams = layoutParams
-                tableRowRight.addView(textViewRight)
+            // Tworzenie nowego wiersza dla prawej kolumny
+            val tableRowRight = TableRow(context)
+            val textViewRight = TextView(context)
+            textViewRight.text = note
+            textViewRight.setPadding(8, 8, 8, 8)
+            textViewRight.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            textViewRight.layoutParams = layoutParams
+            tableRowRight.addView(textViewRight)
 
-                when (mood) {
-                    "fatalny" -> {
-                        tableRowLeft.setBackgroundColor(Color.rgb(233,57,57))
-                        tableRowMiddle.setBackgroundColor(Color.rgb(233,57,57))
-                        tableRowRight.setBackgroundColor(Color.rgb(233,57,57))
-                    }
-                    "zły" -> {
-                        tableRowLeft.setBackgroundColor(Color.rgb(239,113,3))
-                        tableRowMiddle.setBackgroundColor(Color.rgb(239,113,3))
-                        tableRowRight.setBackgroundColor(Color.rgb(239,113,3))
-                    }
-                    "neutralny" -> {
-                        tableRowLeft.setBackgroundColor(Color.rgb(255,189,5))
-                        tableRowMiddle.setBackgroundColor(Color.rgb(255,189,5))
-                        tableRowRight.setBackgroundColor(Color.rgb(255,189,5))
-                    }
-                    "dobry" -> {
-                        tableRowLeft.setBackgroundColor(Color.rgb(208,221,56))
-                        tableRowMiddle.setBackgroundColor(Color.rgb(208,221,56))
-                        tableRowRight.setBackgroundColor(Color.rgb(208,221,56))
-                    }
-                    "doskonały" -> {
-                        tableRowLeft.setBackgroundColor(Color.rgb(134,192,72))
-                        tableRowMiddle.setBackgroundColor(Color.rgb(134,192,72))
-                        tableRowRight.setBackgroundColor(Color.rgb(134,192,72))
-                    }
-                }
-
-                rowsLeft.add(tableRowLeft)
-                rowsMiddle.add(tableRowMiddle)
-                rowsRight.add(tableRowRight)
+            if (index % 2 == 0){
+                tableRowLeft.setBackgroundColor(Color.LTGRAY)
+                tableRowMiddle.setBackgroundColor(Color.LTGRAY)
+                tableRowRight.setBackgroundColor(Color.LTGRAY)
             }
             else {
-                continue
+                tableRowLeft.setBackgroundColor(Color.WHITE)
+                tableRowMiddle.setBackgroundColor(Color.WHITE)
+                tableRowRight.setBackgroundColor(Color.WHITE)
             }
+            index++
+//            when (mood) {
+//                "fatalny" -> {
+//                    tableRowLeft.setBackgroundColor(Color.rgb(233,57,57))
+//                    tableRowMiddle.setBackgroundColor(Color.rgb(233,57,57))
+//                    tableRowRight.setBackgroundColor(Color.rgb(233,57,57))
+//                }
+//                "zły" -> {
+//                    tableRowLeft.setBackgroundColor(Color.rgb(239,113,3))
+//                    tableRowMiddle.setBackgroundColor(Color.rgb(239,113,3))
+//                    tableRowRight.setBackgroundColor(Color.rgb(239,113,3))
+//                }
+//                "neutralny" -> {
+//                    tableRowLeft.setBackgroundColor(Color.rgb(255,189,5))
+//                    tableRowMiddle.setBackgroundColor(Color.rgb(255,189,5))
+//                    tableRowRight.setBackgroundColor(Color.rgb(255,189,5))
+//                }
+//                "dobry" -> {
+//                    tableRowLeft.setBackgroundColor(Color.rgb(208,221,56))
+//                    tableRowMiddle.setBackgroundColor(Color.rgb(208,221,56))
+//                    tableRowRight.setBackgroundColor(Color.rgb(208,221,56))
+//                }
+//                "doskonały" -> {
+//                    tableRowLeft.setBackgroundColor(Color.rgb(134,192,72))
+//                    tableRowMiddle.setBackgroundColor(Color.rgb(134,192,72))
+//                    tableRowRight.setBackgroundColor(Color.rgb(134,192,72))
+//                }
+//            }
+
+            rowsLeft.add(tableRowLeft)
+            rowsMiddle.add(tableRowMiddle)
+            rowsRight.add(tableRowRight)
+//            }
+//            else {
+//                continue
+//            }
         }
 
         for (i in rowsLeft.size - 1 downTo 0) {
