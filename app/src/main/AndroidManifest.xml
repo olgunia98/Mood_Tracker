@@ -18,6 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mood_Tracker"
         tools:targetApi="tiramisu">
+        <activity android:name=".Medicine" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
