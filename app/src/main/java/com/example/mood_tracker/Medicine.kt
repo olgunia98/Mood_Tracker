@@ -2,16 +2,17 @@ package com.example.mood_tracker
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
-import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.example.mood_tracker.R
 import java.util.*
 
@@ -44,6 +45,11 @@ class Medicine : AppCompatActivity() {
         addEndDateButton.setOnClickListener {
             showDatePickerDialog(selectedEndDatesList, findViewById(R.id.selectedEndDatesLayout))
         }
+
+        val saveButton: Button = findViewById(R.id.save)
+        saveButton.setOnClickListener {
+            saveData()
+        }
     }
 
     private fun showTimePickerDialog() {
@@ -53,7 +59,7 @@ class Medicine : AppCompatActivity() {
 
         val timePickerDialog = TimePickerDialog(
             this,
-            { _: TimePicker?, hourOfDay: Int, minute: Int ->
+            { _, hourOfDay, minute ->
                 val selectedTime = "$hourOfDay:$minute"
                 selectedTimesList.add(selectedTime)
                 updateSelectedTimesLayout()
@@ -75,7 +81,7 @@ class Medicine : AppCompatActivity() {
 
         val datePickerDialog = DatePickerDialog(
             this,
-            { _: DatePicker?, year: Int, month: Int, dayOfMonth: Int ->
+            { _, year, month, dayOfMonth ->
                 val selectedDate = "$dayOfMonth/${month + 1}/$year"
                 dateList.add(selectedDate)
                 updateSelectedDatesLayout(dateList, layout)
@@ -125,25 +131,20 @@ class Medicine : AppCompatActivity() {
             selectedTimesLayout.addView(itemView)
         }
     }
-}
 
-//package com.example.mood_tracker
-//
-//import android.os.Bundle
-//import android.widget.ImageButton
-//import androidx.appcompat.app.AppCompatActivity
-//
-//class Medicine : AppCompatActivity() {
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.add_medicine)
-//
-//        val imageButton2: ImageButton = findViewById(R.id.imageButton2)
-//        imageButton2.setOnClickListener {
-//            onBackPressed()
-//        }
-//    }
-//
-//
-//}
+    private fun saveData() {
+        val drugName: EditText = findViewById(R.id.editTextDrugName)
+        val dosage: EditText = findViewById(R.id.editTextNumber2)
+
+        val data = Intent().apply {
+            putExtra("drugName", drugName.text.toString())
+            putExtra("dosage", dosage.text.toString())
+            putStringArrayListExtra("startDates", ArrayList(selectedStartDatesList))
+            putStringArrayListExtra("endDates", ArrayList(selectedEndDatesList))
+            putStringArrayListExtra("times", ArrayList(selectedTimesList))
+        }
+
+        setResult(FragmentActivity.RESULT_OK, data)
+        finish()
+    }
+}
