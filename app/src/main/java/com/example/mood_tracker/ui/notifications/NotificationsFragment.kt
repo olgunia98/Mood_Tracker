@@ -1,32 +1,28 @@
 package com.example.mood_tracker.ui.notifications
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.mood_tracker.R
 import com.example.mood_tracker.databinding.FragmentNotificationsBinding
-import java.util.*
+import com.example.mood_tracker.Medicine
 
 class NotificationsFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
+    private val REQUEST_CODE_ADD_MEDICINE = 1
 
-    //
-    private val selectedStartDatesList = mutableListOf<String>()
-    private val selectedEndDatesList = mutableListOf<String>()
-
-    private val selectedTimesList = mutableListOf<String>()
+    private val medicinesList = mutableListOf<Medicine>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,21 +32,14 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val addTimeButton: Button = binding.addTimeButton
-        addTimeButton.setOnClickListener {
-            showTimePickerDialog()
+        val buttonNewMedicine: Button = binding.root.findViewById(R.id.new_medicine)
+        buttonNewMedicine.setOnClickListener {
+            val intent = Intent(activity, com.example.mood_tracker.Medicine::class.java)
+            startActivityForResult(intent, REQUEST_CODE_ADD_MEDICINE)
         }
 
-        //data
-        val addStartDateButton: Button = binding.addStartDateButton
-        addStartDateButton.setOnClickListener {
-            showDatePickerDialog(selectedStartDatesList, binding.selectedStartDatesLayout)
-        }
-
-        val addEndDateButton: Button = binding.addEndDateButton
-        addEndDateButton.setOnClickListener {
-            showDatePickerDialog(selectedEndDatesList, binding.selectedEndDatesLayout)
-        }
+        loadMedicines()
+        updateMedicinesLayout()
 
         return root
     }
@@ -60,89 +49,227 @@ class NotificationsFragment : Fragment() {
         _binding = null
     }
 
-    private fun showTimePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-
-        // Create a new instance of TimePickerDialog
-        val timePickerDialog = TimePickerDialog(
-            requireContext(),
-            { _: TimePicker?, hourOfDay: Int, minute: Int ->
-                // Handle time selection
-                val selectedTime = "$hourOfDay:$minute"
-                selectedTimesList.add(selectedTime)
-                updateSelectedTimesLayout()
-
-                // You can save the selected time here in SharedPreferences, a ViewModel, or any other storage mechanism
-                // For demonstration purposes, I'll just display a Toast
-                Toast.makeText(requireContext(), "Selected time: $selectedTime", Toast.LENGTH_SHORT).show()
-            },
-            hour,
-            minute,
-            false // Set to true if you want 24-hour format
-        )
-
-        // Show the time picker dialog
-        timePickerDialog.show()
-    }
-    private fun showDatePickerDialog(dateList: MutableList<String>, layout: LinearLayout) {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _: DatePicker?, year: Int, month: Int, dayOfMonth: Int ->
-                val selectedDate = "$dayOfMonth/${month + 1}/$year"
-                dateList.add(selectedDate)
-                updateSelectedDatesLayout(dateList, layout)
-
-                Toast.makeText(requireContext(), "Selected date: $selectedDate", Toast.LENGTH_SHORT).show()
-            },
-            year,
-            month,
-            dayOfMonth
-        )
-        datePickerDialog.show()
-    }
-
-    private fun updateSelectedDatesLayout(dateList: MutableList<String>, layout: LinearLayout) {
-        layout.removeAllViews()
-
-        for (selectedDate in dateList) {
-            val itemView = layoutInflater.inflate(R.layout.item_selected_date, layout, false)
-            val dateTextView: TextView = itemView.findViewById(R.id.timeTextView)
-            val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
-
-            dateTextView.text = selectedDate
-            deleteButton.setOnClickListener {
-                dateList.remove(selectedDate)
-                layout.removeView(itemView)
-            }
-
-            layout.addView(itemView)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_ADD_MEDICINE && resultCode == Activity.RESULT_OK) {
+            loadMedicines()
+            updateMedicinesLayout()
         }
     }
 
-    private fun updateSelectedTimesLayout() {
-        val layoutInflater = LayoutInflater.from(requireContext())
-        val selectedTimesLayout: LinearLayout = binding.selectedTimesLayout
-        selectedTimesLayout.removeAllViews()
+    private fun loadMedicines() {
+        val sharedPreferences = activity?.getSharedPreferences("medicines", Context.MODE_PRIVATE)
+        sharedPreferences?.let {
+            val allEntries = it.all
+            medicinesList.clear()
+            for ((key, value) in allEntries) {
+                if (key.endsWith("-drugName")) {
+                    val medicineId = key.substringBefore("-drugName")
+                    val drugName = value as String
+                    val dosage = sharedPreferences.getString("$medicineId-dosage", "")
+                    val startDates = sharedPreferences.getStringSet("$medicineId-startDates", emptySet())
+                    val endDates = sharedPreferences.getStringSet("$medicineId-endDates", emptySet())
+                    val times = sharedPreferences.getStringSet("$medicineId-times", emptySet())
 
-        for (selectedTime in selectedTimesList) {
-            val itemView = layoutInflater.inflate(R.layout.item_selected_time, selectedTimesLayout, false)
-            val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
-            val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
-
-            timeTextView.text = selectedTime
-            deleteButton.setOnClickListener {
-                selectedTimesList.remove(selectedTime)
-                updateSelectedTimesLayout()
+                    if (dosage != null && startDates != null && endDates != null && times != null) {
+                        val medicine = Medicine(drugName, dosage, ArrayList(startDates), ArrayList(endDates), ArrayList(times))
+                        medicinesList.add(medicine)
+                    }
+                }
             }
-
-            selectedTimesLayout.addView(itemView)
         }
     }
+
+    private fun updateMedicinesLayout() {
+        val medicinesLayout: LinearLayout = binding.root.findViewById(R.id.medicinesLayout)
+        medicinesLayout.removeAllViews()
+
+        for (medicine in medicinesList) {
+            val itemView = layoutInflater.inflate(R.layout.item_medicine, medicinesLayout, false)
+            val drugNameTextView: TextView = itemView.findViewById(R.id.drugNameTextView)
+            val dosageTextView: TextView = itemView.findViewById(R.id.dosageTextView)
+            val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
+
+            drugNameTextView.text = medicine.drugName
+            dosageTextView.text = medicine.dosage
+            deleteButton.setOnClickListener {
+                medicinesList.remove(medicine)
+                removeMedicineFromSharedPreferences(medicine)
+                updateMedicinesLayout()
+            }
+
+            medicinesLayout.addView(itemView)
+        }
+    }
+
+    private fun removeMedicineFromSharedPreferences(medicine: Medicine) {
+        val sharedPreferences = activity?.getSharedPreferences("medicines", Context.MODE_PRIVATE)
+        val editor = sharedPreferences?.edit()
+
+        val allEntries = sharedPreferences?.all
+        allEntries?.let {
+            for ((key, value) in it) {
+                if (key.endsWith("-drugName") && value == medicine.drugName) {
+                    val medicineId = key.substringBefore("-drugName")
+                    editor?.remove("$medicineId-drugName")
+                    editor?.remove("$medicineId-dosage")
+                    editor?.remove("$medicineId-startDates")
+                    editor?.remove("$medicineId-endDates")
+                    editor?.remove("$medicineId-times")
+                }
+            }
+        }
+        editor?.apply()
+    }
+
+    data class Medicine(
+        val drugName: String,
+        val dosage: String,
+        val startDates: ArrayList<String>,
+        val endDates: ArrayList<String>,
+        val times: ArrayList<String>
+    )
 }
+
+//package com.example.mood_tracker.ui.notifications
+//
+//import android.app.Activity
+//import android.content.Context
+//import android.content.Intent
+//import android.os.Bundle
+//import android.view.LayoutInflater
+//import android.view.View
+//import android.view.ViewGroup
+//import android.widget.Button
+//import android.widget.LinearLayout
+//import android.widget.TextView
+//import android.widget.Toast
+//import androidx.fragment.app.Fragment
+//import com.example.mood_tracker.R
+//import com.example.mood_tracker.databinding.FragmentNotificationsBinding
+//import com.example.mood_tracker.Medicine
+//
+//class NotificationsFragment : Fragment() {
+//
+//    private var _binding: FragmentNotificationsBinding? = null
+//    private val binding get() = _binding!!
+//    private val REQUEST_CODE_ADD_MEDICINE = 1
+//
+//    private val medicinesList = mutableListOf<Medicine>()
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View {
+//        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
+//        val root: View = binding.root
+//
+//        val buttonNewMedicine: Button = binding.root.findViewById(R.id.new_medicine)
+//        buttonNewMedicine.setOnClickListener {
+//            val intent = Intent(activity, com.example.mood_tracker.Medicine::class.java)
+//            startActivityForResult(intent, REQUEST_CODE_ADD_MEDICINE)
+//        }
+//
+//        loadMedicines()
+//
+//        return root
+//    }
+//
+//    private fun loadMedicines() {
+//        val sharedPreferences = activity?.getSharedPreferences("medicines", Context.MODE_PRIVATE)
+//        sharedPreferences?.let {
+//            val allEntries = it.all
+//            for ((key, value) in allEntries) {
+//                if (key.endsWith("-drugName")) {
+//                    val medicineId = key.substringBefore("-drugName")
+//                    val drugName = value as String
+//                    val dosage = sharedPreferences.getString("$medicineId-dosage", "")
+//                    val startDates = sharedPreferences.getStringSet("$medicineId-startDates", emptySet())
+//                    val endDates = sharedPreferences.getStringSet("$medicineId-endDates", emptySet())
+//                    val times = sharedPreferences.getStringSet("$medicineId-times", emptySet())
+//
+//                    if (dosage != null && startDates != null && endDates != null && times != null) {
+//                        val medicine = Medicine(drugName, dosage, ArrayList(startDates), ArrayList(endDates), ArrayList(times))
+//                        medicinesList.add(medicine)
+//                    }
+//                }
+//            }
+//            updateMedicinesLayout()
+//        }
+//    }
+//
+//
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        _binding = null
+//    }
+//
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == REQUEST_CODE_ADD_MEDICINE && resultCode == Activity.RESULT_OK && data != null) {
+//            val drugName = data.getStringExtra("drugName")
+//            val dosage = data.getStringExtra("dosage")
+//            val startDates = data.getStringArrayListExtra("startDates")
+//            val endDates = data.getStringArrayListExtra("endDates")
+//            val times = data.getStringArrayListExtra("times")
+//
+//            if (drugName != null && dosage != null && startDates != null && endDates != null && times != null) {
+//                val medicine = Medicine(drugName, dosage, startDates, endDates, times)
+//                medicinesList.add(medicine)
+//                updateMedicinesLayout()
+//            } else {
+//                Toast.makeText(context, "Failed to add medicine", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
+//
+//    private fun updateMedicinesLayout() {
+//        val medicinesLayout: LinearLayout = binding.root.findViewById(R.id.medicinesLayout)
+//        medicinesLayout.removeAllViews()
+//
+//        for (medicine in medicinesList) {
+//            val itemView = layoutInflater.inflate(R.layout.item_medicine, medicinesLayout, false)
+//            val drugNameTextView: TextView = itemView.findViewById(R.id.drugNameTextView)
+//            val dosageTextView: TextView = itemView.findViewById(R.id.dosageTextView)
+//            val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
+//
+//            drugNameTextView.text = medicine.drugName
+//            dosageTextView.text = medicine.dosage
+//            deleteButton.setOnClickListener {
+//                medicinesList.remove(medicine)
+//                removeMedicineFromSharedPreferences(medicine)
+//                updateMedicinesLayout()
+//            }
+//
+//            medicinesLayout.addView(itemView)
+//        }
+//    }
+//    private fun removeMedicineFromSharedPreferences(medicine: Medicine) {
+//        val sharedPreferences = activity?.getSharedPreferences("medicines", Context.MODE_PRIVATE)
+//        val editor = sharedPreferences?.edit()
+//
+//        val allEntries = sharedPreferences?.all
+//        allEntries?.let {
+//            for ((key, value) in it) {
+//                if (key.endsWith("-drugName") && value == medicine.drugName) {
+//                    val medicineId = key.substringBefore("-drugName")
+//                    editor?.remove("$medicineId-drugName")
+//                    editor?.remove("$medicineId-dosage")
+//                    editor?.remove("$medicineId-startDates")
+//                    editor?.remove("$medicineId-endDates")
+//                    editor?.remove("$medicineId-times")
+//                }
+//            }
+//        }
+//        editor?.apply()
+//    }
+//
+//    data class Medicine(
+//        val drugName: String,
+//        val dosage: String,
+//        val startDates: ArrayList<String>,
+//        val endDates: ArrayList<String>,
+//        val times: ArrayList<String>
+//    )
+//}
