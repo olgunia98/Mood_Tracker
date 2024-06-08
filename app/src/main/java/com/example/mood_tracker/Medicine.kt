@@ -1,5 +1,6 @@
 package com.example.mood_tracker
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
@@ -136,15 +137,20 @@ class Medicine : AppCompatActivity() {
         val drugName: EditText = findViewById(R.id.editTextDrugName)
         val dosage: EditText = findViewById(R.id.editTextNumber2)
 
-        val data = Intent().apply {
-            putExtra("drugName", drugName.text.toString())
-            putExtra("dosage", dosage.text.toString())
-            putStringArrayListExtra("startDates", ArrayList(selectedStartDatesList))
-            putStringArrayListExtra("endDates", ArrayList(selectedEndDatesList))
-            putStringArrayListExtra("times", ArrayList(selectedTimesList))
-        }
+        val sharedPreferences = getSharedPreferences("medicines", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
 
-        setResult(FragmentActivity.RESULT_OK, data)
+        val medicineId = UUID.randomUUID().toString()
+        editor.putString("$medicineId-drugName", drugName.text.toString())
+        editor.putString("$medicineId-dosage", dosage.text.toString())
+        editor.putStringSet("$medicineId-startDates", selectedStartDatesList.toSet())
+        editor.putStringSet("$medicineId-endDates", selectedEndDatesList.toSet())
+        editor.putStringSet("$medicineId-times", selectedTimesList.toSet())
+        editor.apply()
+
+        setResult(RESULT_OK)
         finish()
     }
+
+
 }

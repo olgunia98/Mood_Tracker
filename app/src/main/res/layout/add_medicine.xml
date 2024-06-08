@@ -99,44 +99,6 @@
                 android:textAlignment="center" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:paddingTop="10dp"
-            android:text="  Jak często?"
-            android:textAlignment="viewStart"
-            android:textAllCaps="false"
-            android:textColor="#000000"
-            android:textSize="20sp" />
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:backgroundTint="#C6EFC7"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radioButton"
-                android:layout_width="130dp"
-                android:layout_height="wrap_content"
-                android:text="Codziennie" />
-
-            <RadioButton
-                android:id="@+id/radioButton2"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:text="Raz w tygodniu" />
-
-            <RadioButton
-                android:id="@+id/radioButton3"
-                android:layout_width="135dp"
-                android:layout_height="wrap_content"
-                android:text="Raz w miesiącu" />
-
-        </RadioGroup>
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -196,15 +158,21 @@
 
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="100dp">
+                android:layout_height="168dp">
 
                 <LinearLayout
                     android:id="@+id/selectedTimesLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                </LinearLayout>
+                    android:orientation="vertical"></LinearLayout>
             </ScrollView>
+
+            <Button
+                android:id="@+id/save"
+                android:layout_width="424dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#009688"
+                android:text="zapisz :)" />
             <!--            <LinearLayout-->
             <!--                android:id="@+id/selectedTimesLayout"-->
             <!--                android:layout_width="match_parent"-->
@@ -216,18 +184,5 @@
 
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/save"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#009688"
-        android:text="zapisz :)"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.844" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
