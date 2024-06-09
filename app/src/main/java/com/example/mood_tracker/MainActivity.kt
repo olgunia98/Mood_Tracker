@@ -2,9 +2,12 @@ package com.example.mood_tracker
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
@@ -27,7 +30,6 @@ class MainActivity : AppCompatActivity() {
     //private val timePickers = mutableListOf<TimePicker>()
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,46 +43,56 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications, R.id.navigation_profile
+                R.id.navigation_home,
+                R.id.navigation_dashboard,
+                R.id.navigation_notifications,
+                R.id.navigation_profile
             )
 
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        createNotificationChannel()
+
+        // Ustawienie alarmu na określoną godzinę
+//        val calendar = Calendar.getInstance().apply {
+//            set(Calendar.HOUR_OF_DAY, 19) // Godzina 14:00
+//            set(Calendar.MINUTE, 55) // Minuta 30
+//            set(Calendar.SECOND, 20) // Sekunda 0
+//        }
+//
+//        scheduleNotification(calendar.timeInMillis)
     }
 
-    companion object {
-        private const val REQUEST_CODE_BASE = 100
-        @SuppressLint("ScheduleExactAlarm")
-        fun scheduleNotification(context: Context) {
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 13)
-                set(Calendar.MINUTE, 22)
-                set(Calendar.SECOND, 30)
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "MyChannel"
+            val descriptionText = "Channel for MyApp notifications"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("my_channel_id", name, importance).apply {
+                description = descriptionText
             }
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
 
-            val notificationText = "Aspiryna"
-            val intent = Intent(context, NotificationReceiver::class.java).apply {
-                putExtra("notification_text", notificationText)
-            }
-            val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+    private fun scheduleNotification(timeInMillis: Long) {
+        val intent = Intent(this, NotificationReceiver::class.java).apply {
+            putExtra("notification_id", 1)
         }
 
-//        fun cancelNotifications(context: Context) {
-//            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//            for (index in 0 until (context as MainActivity).timePickers.size) {
-//                val intent = Intent(context, NotificationReceiver::class.java)
-//                val pendingIntent = PendingIntent.getBroadcast(
-//                    context, REQUEST_CODE_BASE + index, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//                )
-//
-//                alarmManager.cancel(pendingIntent)
-//            }
-//        }
-    }
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+    }
 }
