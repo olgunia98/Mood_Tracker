@@ -173,12 +173,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#009688"
                 android:text="zapisz" />
-            <!--            <LinearLayout-->
-            <!--                android:id="@+id/selectedTimesLayout"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="100dp"-->
-            <!--                android:orientation="vertical">-->
-            <!--            </LinearLayout>-->
+
 
         </LinearLayout>
 

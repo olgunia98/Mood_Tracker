@@ -27,9 +27,6 @@ import androidx.appcompat.app.AppCompatDelegate
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    //private val timePickers = mutableListOf<TimePicker>()
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,8 +36,6 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
@@ -56,14 +51,6 @@ class MainActivity : AppCompatActivity() {
 
         createNotificationChannel()
 
-        // Ustawienie alarmu na określoną godzinę
-//        val calendar = Calendar.getInstance().apply {
-//            set(Calendar.HOUR_OF_DAY, 19) // Godzina 14:00
-//            set(Calendar.MINUTE, 55) // Minuta 30
-//            set(Calendar.SECOND, 20) // Sekunda 0
-//        }
-//
-//        scheduleNotification(calendar.timeInMillis)
     }
 
     private fun createNotificationChannel() {

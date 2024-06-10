@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.profile.ProfileFragment">
 
-    <!--  Pytania i odpowiedzi  -->
     <TextView
         android:id="@+id/question_text_view_0"
         android:layout_width="0dp"
@@ -77,7 +76,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/answers_radio_group" />
 
-<!--  Wyniki  -->
     <TextView
         android:id="@+id/end_text_view"
         android:layout_width="0dp"
@@ -132,7 +130,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/description_text_view" />
 
-<!--  Ekran początkowy  -->
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="0dp"

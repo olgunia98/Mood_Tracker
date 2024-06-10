@@ -15,9 +15,6 @@ import com.example.mood_tracker.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment(){
     private var _binding: FragmentProfileBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     private lateinit var titleTextView: TextView
@@ -114,14 +111,6 @@ class ProfileFragment : Fragment(){
                 val answerIndex = answersRadioGroup.indexOfChild(selectedRadioButton)
 
                 points += answerIndex
-                //Toast.makeText(this.context, points.toString(), Toast.LENGTH_SHORT).show()
-
-//                if (answerIndex == correctAnswers[currentQuestion]) {
-//                    Toast.makeText(this.context, "Correct!", Toast.LENGTH_SHORT).show()
-//                } else {
-//                    Toast.makeText(this.context, "Incorrect!", Toast.LENGTH_SHORT).show()
-//                }
-
                 currentQuestion++
                 if (currentQuestion < questions.size) {
                     loadQuestion()

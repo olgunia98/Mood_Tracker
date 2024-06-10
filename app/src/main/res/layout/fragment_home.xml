@@ -135,18 +135,6 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textSize="34sp" />
 
-<!--        <ScrollView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="300dp">-->
-
-<!--            <LinearLayout-->
-<!--                android:id="@+id/historyLayout"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical">-->
-<!--            </LinearLayout>-->
-<!--        </ScrollView>-->
-
         <TableLayout
             android:id="@+id/table_header"
             android:layout_width="match_parent"
@@ -189,7 +177,6 @@
             </TableRow>
         </TableLayout>
 
-        <!-- Przewijany obszar tabeli -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -199,14 +186,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- Tabela po lewej stronie -->
                 <TableLayout
                     android:id="@+id/table_content_left"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
-                    <!-- Tutaj będą dynamicznie dodawane wiersze tabeli po lewej stronie -->
+
                 </TableLayout>
 
                 <TableLayout
@@ -215,17 +201,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
-                    <!-- Tutaj będą dynamicznie dodawane wiersze tabeli po lewej stronie -->
+
                 </TableLayout>
 
-                <!-- Tabela po prawej stronie -->
                 <TableLayout
                     android:id="@+id/table_content_right"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
-                    <!-- Tutaj będą dynamicznie dodawane wiersze tabeli po prawej stronie -->
+
                 </TableLayout>
 
             </LinearLayout>

@@ -8,7 +8,7 @@ import com.example.mood_tracker.MainActivity
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            // Tutaj ustaw ponownie wszystkie alarmy, które zostały ustawione przed restartem
+
         }
     }
 }

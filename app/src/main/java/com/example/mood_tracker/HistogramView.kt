@@ -23,9 +23,7 @@ import java.util.Date
 import java.util.Locale
 
 class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs) {
-//    private var _binding: FragmentHomeBinding? = null
-//    private val binding get() = _binding!!
-//    private val root: View = binding.root
+
     private val barColors = arrayOf(Color.rgb(233,57,57), Color.rgb(239,113,3), Color.rgb(255,189,5), Color.rgb(208,221,56), Color.rgb(134,192,72))
     private val labels = arrayOf("fatalny", "zły", "neutralny", "dobry", "doskonały")
     private val title = "Częstość nastrojów w całej historii"
@@ -57,8 +55,6 @@ class HistogramView(context: Context, attrs: AttributeSet) : View(context, attrs
                 }
             }
         }
-
-        //Toast.makeText(this.context, dataFromFile, Toast.LENGTH_SHORT).show()
 
         val width = width
         val height = height
